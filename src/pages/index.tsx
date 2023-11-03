@@ -315,7 +315,7 @@ export default function Home() {
           </div>
 
           <div
-            ref={rightSide}
+            ref={rightSideRef}
             className={clsx("border-[1px] space-y-2 border-black p-2 w-[200px] min-w-[200px]", {
               "pointer-events-none": currentSide === "left",
             })}
