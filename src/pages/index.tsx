@@ -281,11 +281,11 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="border-[1px] border-black p-2 flex-1">
+          <div className="border-[1px] relative border-black p-2 flex-1">
             <div
-              className={clsx("w-[100px] transition-all duration-300", {
-                "ml-auto": currentSide === "right",
-                "mr-auto": currentSide === "left",
+              className={clsx("w-[100px] absolute top-0 transition-all duration-300", {
+                "right-[calc(8px)]": currentSide === "right",
+                "right-[calc(100%-100px-8px)]": currentSide === "left",
               })}
               ref={boatRef}
             >
