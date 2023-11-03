@@ -5,6 +5,7 @@ import imageBoat from "@/public/boat.svg";
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/router";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,9 @@ type Stage = "stop" | "sail";
 type Side = "left" | "right";
 
 export default function Home() {
+  const [leftSideRef] = useAutoAnimate();
+  const [boatRef] = useAutoAnimate();
+  const [rightSideRef, enableAnimations] = useAutoAnimate();
   const entities: Entity[] = [
     {
       title: "Крестьянин",
@@ -164,8 +168,7 @@ export default function Home() {
       },
     ],
   };
-  const boatRef = useRef(null);
-  const router = useRouter()
+  const router = useRouter();
   const [currentSide, setCurrentSide] = useState<Side>("left");
   const [stage, setStage] = useState<Stage>("stop");
   const [boat, setBoat] = useState<Entity[]>([]);
@@ -201,7 +204,7 @@ export default function Home() {
   };
 
   const onResetGame = () => {
-    router.reload()
+    router.reload();
   };
 
   const onSailBoatToSide = () => {
@@ -216,7 +219,7 @@ export default function Home() {
         element.match.forEach((matchElement) => {
           if (leftSide.find((search) => search.title === matchElement)) {
             alert("Game over");
-            onResetGame()
+            onResetGame();
           }
         });
       });
@@ -226,7 +229,7 @@ export default function Home() {
         element.match.forEach((matchElement) => {
           if (rightSide.find((search) => search.title === matchElement)) {
             alert("Game over");
-            onResetGame()
+            onResetGame();
           }
         });
       });
@@ -265,7 +268,7 @@ export default function Home() {
             })}
           >
             <p className="font-bold">Берег А</p>
-            <div className="space-y-1">
+            <div ref={leftSideRef} className="space-y-1">
               {leftSide.map((item) => {
                 return (
                   <button onClick={() => onPutBoat(item)} key={item.title} className="flex items-end space-x-1 px-2 py-1 bg-gray-100 rounded-lg">
@@ -312,6 +315,7 @@ export default function Home() {
           </div>
 
           <div
+            ref={rightSide}
             className={clsx("border-[1px] space-y-2 border-black p-2 w-[200px] min-w-[200px]", {
               "pointer-events-none": currentSide === "left",
             })}
