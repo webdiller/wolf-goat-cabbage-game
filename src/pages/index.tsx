@@ -22,7 +22,7 @@ interface Entity {
   title: string;
   icon: string;
   match: string[];
-  errorMessage?: string
+  errorMessage?: string;
 }
 
 type Stage = "stop" | "sail";
@@ -263,9 +263,9 @@ export default function Home() {
             />
           </svg>
         </button>
-        <div className="min-h-[300px] flex gap-2">
+        <div className="min-h-[300px] flex md:flex-row flex-col gap-2">
           <div
-            className={clsx("border-[1px] space-y-2 border-black p-2 w-[200px] min-w-[200px]", {
+            className={clsx("border-[1px] space-y-2 border-black p-2 w-full md:w-[200px] min-w-[200px]", {
               "pointer-events-none": currentSide === "right",
             })}
           >
@@ -318,7 +318,7 @@ export default function Home() {
 
           <div
             ref={rightSideRef}
-            className={clsx("border-[1px] space-y-2 border-black p-2 w-[200px] min-w-[200px]", {
+            className={clsx("border-[1px] space-y-2 border-black p-2 w-full md:w-[200px] min-w-[200px]", {
               "pointer-events-none": currentSide === "left",
             })}
           >
