@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import mainImage from "@/public/main-image.jpg";
-import { useEffect, useState } from "react";
+import imageMain from "@/public/main-image.jpg";
+import imageBoat from "@/public/boat.svg";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -15,7 +16,39 @@ interface Answer {
   isCorrect: boolean;
 }
 
+interface Entity {
+  title: string;
+  icon: string;
+  match: Entity[];
+}
+
+type Stage = "stop" | "sail";
+type Side = "left" | "right";
+
 export default function Home() {
+  const entities: Entity[] = [
+    {
+      title: "Крестьянин",
+      icon: "🧍",
+      match: [],
+    },
+    {
+      title: "Волк",
+      icon: "🐺",
+      match: [],
+    },
+    {
+      title: "Коза",
+      icon: "🐐",
+      match: [],
+    },
+    {
+      title: "Капуста",
+      icon: "🥦",
+      match: [],
+    },
+  ];
+
   const question: Question = {
     title: (
       <p>
@@ -130,42 +163,122 @@ export default function Home() {
       },
     ],
   };
+  const boatRef = useRef(null);
+  const [currentSide, setCurrentSide] = useState<Side>("left");
+  const [stage, setStage] = useState<Stage>("stop");
+  const [boat, setBoat] = useState<Entity[]>([]);
+  const [leftSide, setLeftSide] = useState<Entity[]>(entities);
+  const [rightSide, setRightSide] = useState<Entity[]>([]);
   const [selected, setSelected] = useState<Answer | null>(null);
-  const onSelectAnswer = (answer: Answer) => setSelected(answer);
 
-  useEffect(() => {
-    if (selected && !selected.isCorrect) {
-      alert("Неверно!");
-      setSelected(null);
+  const onPutBoat = (entity: Entity) => {
+    if (boat.length >= 2) return;
+    if (currentSide === "left") {
+      const filtered = leftSide.filter((item) => item.title !== entity.title);
+      setLeftSide(filtered);
+      setBoat((prev) => [...prev, entity]);
     }
-    if (selected && selected.isCorrect) {
-      alert("Верно!");
-      setSelected(null);
+    if (currentSide === "right") {
+      const filtered = rightSide.filter((item) => item.title !== entity.title);
+      setRightSide(filtered);
+      setBoat((prev) => [...prev, entity]);
     }
-  }, [selected]);
+  };
+
+  const onGetBoat = (entity: Entity) => {
+    if (currentSide === "left") {
+      const filtered = boat.filter((item) => item.title !== entity.title);
+      setBoat(filtered);
+      setLeftSide((prev) => [...prev, entity]);
+    }
+    if (currentSide === "right") {
+      const filtered = boat.filter((item) => item.title !== entity.title);
+      setBoat(filtered);
+      setRightSide((prev) => [...prev, entity]);
+    }
+  };
+
+  const onSailBoatToSide = () => {
+    if (!boat.find((search) => search.title.includes("рестьянин"))) return;
+    if (currentSide === "left") setCurrentSide("right");
+    if (currentSide === "right") setCurrentSide("left");
+  };
 
   return (
     <div className="container space-y-2 max-w-[800px] mx-auto p-4">
-      <Image width={mainImage.width} height={mainImage.height} alt="" className="w-full h-auto rounded-md object-cover" unoptimized src={mainImage.src} />
+      <Image width={imageMain.width} height={imageMain.height} alt="Главное изображение" className="w-full h-auto rounded-md object-cover" unoptimized src={imageMain.src} />
       <div className="space-y-2">
         <h1 className="text-2xl font-bold">Игра "Коза, капуста и волк"</h1>
-        <p>{question.title}</p>
-        <div className="grid grid-cols-2 gap-1">
-          {question.answers.map((item, indx) => {
-            return (
-              <div
-                key={indx}
-                onClick={() => onSelectAnswer(item)}
-                className={clsx("h-full text-left bg-transparent font-semibold hover:border-blue-500 hover:bg-blue-500 hover:text-white transition-all py-2 px-4 border rounded", {
-                  "order-blue-500 text-blue-700 border-blue-500": !selected,
-                  "border-red-500 text-red-700": selected?.isCorrect === false,
-                  "border-green-500 text-green-700": selected?.isCorrect === true && item.title === selected.title,
+        {question.title}
+        <div className="min-h-[300px] flex gap-2">
+          <div
+            className={clsx("border-[1px] space-y-2 border-black p-2 w-[200px] min-w-[200px]", {
+              "pointer-events-none": currentSide === "right",
+            })}
+          >
+            <p className="font-bold">Берег А</p>
+            <div className="space-y-1">
+              {leftSide.map((item) => {
+                return (
+                  <button onClick={() => onPutBoat(item)} key={item.title} className="flex items-end space-x-1 px-2 py-1 bg-gray-100 rounded-lg">
+                    {item.icon} {item.title}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="border-[1px] border-black p-2 flex-1">
+            <div
+              className={clsx("w-[100px] transition-all duration-300", {
+                "ml-auto": currentSide === "right",
+                "mr-auto": currentSide === "left",
+              })}
+              ref={boatRef}
+            >
+              <img width={imageBoat.width} height={imageBoat.height} alt="Иконка лодки" src={imageBoat.src} />
+              <div className="flex mb-1 bg-gray-200 rounded-md items-center space-x-1">
+                {boat.map((item) => {
+                  return (
+                    <button onClick={() => onGetBoat(item)} className="p-1" key={item.title}>
+                      {item.icon}
+                    </button>
+                  );
                 })}
-              >
-                {item.title}
               </div>
-            );
-          })}
+              <button onClick={onSailBoatToSide} className={clsx("bg-gray-200 rounded-md w-full inline-flex items-center p-1", {})}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className={clsx("w-6 h-6 transition-all duration-300", {
+                    "rotate-[180deg]": currentSide === "left",
+                  })}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div
+            className={clsx("border-[1px] space-y-2 border-black p-2 w-[200px] min-w-[200px]", {
+              "pointer-events-none": currentSide === "left",
+            })}
+          >
+            <p className="font-bold">Берег Б</p>
+            <div className="space-y-1">
+              {rightSide.map((item) => {
+                return (
+                  <button onClick={() => onPutBoat(item)} key={item.title} className="flex items-end space-x-1 px-2 py-1 bg-gray-100 rounded-lg">
+                    {item.icon} {item.title}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>
