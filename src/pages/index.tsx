@@ -22,6 +22,7 @@ interface Entity {
   title: string;
   icon: string;
   match: string[];
+  errorMessage?: string
 }
 
 type Stage = "stop" | "sail";
@@ -41,16 +42,19 @@ export default function Home() {
       title: "Волк",
       icon: "🐺",
       match: ["Коза"],
+      errorMessage: "Волк съел козу 🥺",
     },
     {
       title: "Коза",
       icon: "🐐",
       match: ["Капуста"],
+      errorMessage: "Коза съела капусту 🥺",
     },
     {
       title: "Капуста",
       icon: "🥦",
       match: ["Коза"],
+      errorMessage: "Коза съела капусту 🥺",
     },
   ];
 
@@ -170,11 +174,9 @@ export default function Home() {
   };
   const router = useRouter();
   const [currentSide, setCurrentSide] = useState<Side>("left");
-  const [stage, setStage] = useState<Stage>("stop");
   const [boat, setBoat] = useState<Entity[]>([]);
   const [leftSide, setLeftSide] = useState<Entity[]>(entities);
   const [rightSide, setRightSide] = useState<Entity[]>([]);
-  const [selected, setSelected] = useState<Answer | null>(null);
 
   const onPutBoat = (entity: Entity) => {
     if (boat.length >= 2) return;
@@ -218,7 +220,7 @@ export default function Home() {
       leftSide.forEach((element) => {
         element.match.forEach((matchElement) => {
           if (leftSide.find((search) => search.title === matchElement)) {
-            alert("Game over");
+            alert(`${element.errorMessage}`);
             onResetGame();
           }
         });
@@ -228,7 +230,7 @@ export default function Home() {
       rightSide.forEach((element) => {
         element.match.forEach((matchElement) => {
           if (rightSide.find((search) => search.title === matchElement)) {
-            alert("Game over");
+            alert(`${element.errorMessage}`);
             onResetGame();
           }
         });
@@ -238,7 +240,7 @@ export default function Home() {
 
   useEffect(() => {
     if (rightSide.length === 4) {
-      alert("Win");
+      alert("Победа! 🎖️");
     }
   }, [rightSide]);
 
