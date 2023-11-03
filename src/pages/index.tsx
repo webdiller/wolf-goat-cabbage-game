@@ -208,7 +208,7 @@ export default function Home() {
     <div className="container space-y-2 max-w-[800px] mx-auto p-4">
       <Image width={imageMain.width} height={imageMain.height} alt="Главное изображение" className="w-full h-auto rounded-md object-cover" unoptimized src={imageMain.src} />
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold">Игра "Коза, капуста и волк"</h1>
+        <h1 className="text-2xl font-bold">Игра &quot; Коза, капуста и волк &quot;</h1>
         {question.title}
         <div className="min-h-[300px] flex gap-2">
           <div
